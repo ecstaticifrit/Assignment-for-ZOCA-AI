@@ -730,8 +730,8 @@
           <text x="105" y="50" font-size="10" opacity="0.55">♡</text>
         </svg>
       </div>
-        <h1 class="landing-headline">Not sure which beauty treatment is right for you?</h1>
-        <p class="landing-sub">Answer a few quick questions and get a personalized beauty plan - crafted just for you ✨</p>
+        <h1 class="landing-headline">Not sure which treatment is right for your skin?</h1>
+        <p class="landing-sub">Answer a few quick questions and get a personalized beauty plan — crafted just for you ✨</p>
 
         <textarea
           class="input-concern"
@@ -773,7 +773,7 @@
       <!-- Top bar -->
       <div class="topbar">
         <button class="btn-back" onclick="quizBack()">‹</button>
-        <div class="timer-badge" id="quiz-timer">14:30</div>
+        <!-- <div class="timer-badge" id="quiz-timer">14:30</div> -->
       </div>
 
       <div class="progress-area">
@@ -903,14 +903,40 @@
 
   </div><!-- .screen -->
 </div><!-- .phone-frame -->
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 // ═══════════════════════════════════════════════════════
-// CONFIGURATION — Replace with your actual Anthropic API key
+// CONFIGURATION 
 // ═══════════════════════════════════════════════════════
-const GOOGLE_API_KEY = "AIzaSyCyzc1LOxFFbEKfJkTE8JYnOQiTEmx-PJs";
+const SUPABASE_URL = "https://xvbsdljanvnenidalvha.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2YnNkbGphbnZuZW5pZGFsdmhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5MjY3NzUsImV4cCI6MjA4MjUwMjc3NX0.lILWvc8njubkga1wzpWiHuHkaUxkew9QW4HPJ9ak0Xw";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let GOOGLE_API_KEY = ""
 const MODEL = "gemma-3-4b-it"; 
 const WHATSAPP_NUMBER = "918017162874"; // Replace with actual number
+let cachedKey = null;
+
+async function getApiKey() {
+  if (cachedKey) return cachedKey;
+
+  const { data } = await supabaseClient
+    .from('config')
+    .select('key_value')
+    .eq('key_name', 'google_api')
+    .single();
+
+  cachedKey = data.key_value;
+  return cachedKey;
+}
+
+async function initApp() {
+  try {
+    GOOGLE_API_KEY = await getApiKey();
+    console.log("API key loaded");
+  } catch (err) {
+    console.error("Failed to load API key", err);
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // STATE
@@ -1346,7 +1372,8 @@ function getFallbackRecommendation() {
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await initApp(); 
   document.getElementById('concern-input').addEventListener('input', function() {
     this.style.borderColor = '';
   });
