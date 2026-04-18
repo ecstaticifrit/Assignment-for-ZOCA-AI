@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GlowUp Studio — Skin & Beauty Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --lavender: #C8B8F8;
+    --lavender-light: #DDD4FC;
+    --lavender-bg: #E8E0FF;
+    --lavender-deep: #9B84F0;
+    --purple-text: #2D1F6E;
+    --purple-mid: #6B52C8;
+    --yellow-cta: #F5E642;
+    --yellow-hover: #EED800;
+    --white: #FFFFFF;
+    --pink-selected: #FFD6E0;
+    --pill-border: rgba(100,70,200,0.18);
+    --shadow-soft: 0 8px 32px rgba(80,50,180,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--lavender-bg);
+    min-height: 100vh;
+    font-family: 'Nunito Sans', sans-serif;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .phone-frame {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .screen {
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 10px;
+  }
+
+  .btn-back {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(80,50,160,0.25);
+    background: rgba(255,255,255,0.55);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--purple-text);
+    transition: background 0.15s;
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.8); }
+
+  .timer-badge {
+    background: rgba(255,255,255,0.55);
+    border: 1.5px solid rgba(80,50,160,0.25);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--purple-text);
+  }
+
+  /* ── Progress bar ── */
+  .progress-area {
+    padding: 4px 24px 0;
+  }
+  .q-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--purple-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .q-label .dash {
+    flex: 1;
+    height: 3px;
+    background: var(--yellow-cta);
+    border-radius: 2px;
+    margin-left: 6px;
+  }
+  .progress-bar-bg {
+    height: 4px;
+    background: rgba(80,50,160,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple-mid), var(--lavender-deep));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Question text ── */
+  .question-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1.25;
+    color: var(--purple-text);
+    padding: 16px 24px 20px;
+    flex-shrink: 0;
+  }
+
+  /* ── Options ── */
+  .options-list {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .option-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(130,100,220,0.22);
+    background: rgba(255,255,255,0.55);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--purple-text);
+    font-family: 'Nunito Sans', sans-serif;
+  }
+  .option-pill:hover {
+    background: rgba(255,255,255,0.78);
+    border-color: var(--purple-mid);
+  }
+  .option-pill.selected {
+    background: var(--pink-selected);
+    border-color: var(--purple-mid);
+    border-width: 2px;
+  }
+
+  .radio-circle {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(130,100,220,0.4);
+    background: transparent;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .option-pill.selected .radio-circle {
+    border-color: var(--purple-mid);
+    background: var(--purple-mid);
+  }
+  .radio-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .option-pill.selected .radio-dot { opacity: 1; }
+
+  /* ── Illustration ── */
+  .illustration-area {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 24px;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
+  /* ── Bottom buttons ── */
+  .bottom-actions {
+    display: flex;
+    gap: 12px;
+    padding: 10px 24px 0;
+    flex-shrink: 0;
+  }
+  .btn-prev {
+    flex: 1;
+    padding: 16px;
+    border-radius: 50px;
+    border: none;
+    background: rgba(255,255,255,0.85);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--purple-text);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-prev:hover { background: white; }
+
+  .btn-next {
+    flex: 1;
+    padding: 16px;
+    border-radius: 50px;
+    border: none;
+    background: var(--yellow-cta);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #2D1F0E;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-next:hover { background: var(--yellow-hover); }
+  .btn-next:active { transform: scale(0.97); }
+  .btn-next:disabled { background: #D4D4D4; color: #888; cursor: not-allowed; }
+
+  /* ── SCREEN TRANSITIONS ── */
+  .page { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
+  .page.active { display: flex; }
+
+  /* ── BRAND HEADER ── */
+  .brand-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 0px;
+    flex-shrink: 0;
+  }
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-logo-icon {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 16px;
+    border: 1.5px solid rgba(130,100,220,0.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .brand-name-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .brand-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 17px;
+    color: var(--purple-text);
+    line-height: 1;
+  }
+  .brand-tagline {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--purple-mid);
+    opacity: 0.75;
+    letter-spacing: 0.02em;
+  }
+  .brand-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .brand-stars {
+    font-size: 13px;
+    color: #F5C842;
+    letter-spacing: 1px;
+  }
+  .brand-rating-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--purple-mid);
+    opacity: 0.7;
+  }
+
+  /* ── LANDING PAGE ── */
+  .landing-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 24px 32px;
+    justify-content: center;
+    gap: 18px;
+  }
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 20px;
+    padding: 16px 32px;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--purple-mid);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    align-self: flex-start;
+  }
+  .landing-headline {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 42px;
+    line-height: 1.15;
+    color: var(--purple-text);
+  }
+  .landing-sub {
+    font-size: 16px;
+    color: rgba(45,31,110,0.65);
+    line-height: 1.55;
+  }
+  .input-concern {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(130,100,220,0.3);
+    background: rgba(255,255,255,0.7);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 15px;
+    color: var(--purple-text);
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-concern:focus { border-color: var(--purple-mid); background: rgba(255,255,255,0.9); }
+  .input-concern::placeholder { color: rgba(80,50,160,0.4); }
+
+  .trust-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .trust-chip {
+    background: rgba(255,255,255,0.5);
+    border-radius: 50px;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--purple-mid);
+    border: 1px solid rgba(130,100,220,0.2);
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .btn-cta-main {
+    width: 100%;
+    padding: 20px;
+    border-radius: 50px;
+    border: none;
+    background: var(--yellow-cta);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: #2D1F0E;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-cta-main:hover { background: var(--yellow-hover); }
+  .btn-cta-main:active { transform: scale(0.98); }
+
+  /* ── LOADING SCREEN ── */
+  .loading-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 28px;
+    gap: 20px;
+  }
+  .spinner-ring {
+    width: 60px; height: 60px;
+    border: 4px solid rgba(130,100,220,0.2);
+    border-top-color: var(--purple-mid);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--purple-text);
+    text-align: center;
+  }
+  .loading-sub {
+    font-size: 14px;
+    color: rgba(45,31,110,0.6);
+    text-align: center;
+  }
+  .loading-dots {
+    display: flex; gap: 8px;
+  }
+  .loading-dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--lavender-deep);
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+    40% { transform: scale(1.1); opacity: 1; }
+  }
+
+  /* ── LEAD CAPTURE ── */
+  .lead-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 24px 24px;
+  }
+  .lead-headline {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1.25;
+    color: var(--purple-text);
+    margin-bottom: 8px;
+  }
+  .lead-sub {
+    font-size: 14px;
+    color: rgba(45,31,110,0.62);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .prep-card {
+    background: rgba(255,255,255,0.55);
+    border-radius: 20px;
+    border: 1.5px solid rgba(130,100,220,0.2);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .prep-spinner {
+    width: 28px; height: 28px;
+    border: 3px solid rgba(130,100,220,0.2);
+    border-top-color: var(--purple-mid);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  .prep-done {
+    width: 28px; height: 28px;
+    background: #A8E6CF;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+  .prep-text {
+    font-size: 13px;
+    color: var(--purple-mid);
+    font-weight: 600;
+  }
+  .field-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--purple-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  .field-label:first-of-type { margin-top: 0; }
+  .lead-input {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(130,100,220,0.25);
+    background: rgba(255,255,255,0.65);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 15px;
+    color: var(--purple-text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .lead-input:focus { border-color: var(--purple-mid); background: rgba(255,255,255,0.9); }
+  .lead-input::placeholder { color: rgba(80,50,160,0.35); }
+
+  .privacy-note {
+    font-size: 11.5px;
+    color: rgba(45,31,110,0.45);
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+
+  /* ── RESULT SCREEN ── */
+  .result-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    overflow-y: auto;
+  }
+  .result-badge {
+    background: var(--yellow-cta);
+    border-radius: 12px;
+    padding: 4px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    color: #3D2800;
+    display: inline-block;
+    margin-bottom: 12px;
+    align-self: flex-start;
+    letter-spacing: 0.03em;
+  }
+  .result-treatment {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: var(--purple-text);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .result-reasoning {
+    font-size: 14px;
+    color: rgba(45,31,110,0.68);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .steps-card {
+    background: rgba(255,255,255,0.6);
+    border-radius: 20px;
+    border: 1.5px solid rgba(130,100,220,0.18);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .steps-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--purple-mid);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+    color: var(--purple-text);
+    line-height: 1.4;
+  }
+  .step-num {
+    width: 22px; height: 22px;
+    background: var(--lavender-deep);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .coupon-card {
+    background: linear-gradient(135deg, #F5E642 0%, #FFD100 100%);
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border: 2px dashed rgba(100,70,0,0.18);
+  }
+  .coupon-headline {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: #3D2800;
+    margin-bottom: 2px;
+  }
+  .coupon-sub {
+    font-size: 13px;
+    color: rgba(61,40,0,0.7);
+    margin-bottom: 8px;
+  }
+  .coupon-code {
+    display: inline-block;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: #3D2800;
+    letter-spacing: 0.1em;
+  }
+  .btn-whatsapp {
+    width: 100%;
+    padding: 17px;
+    border-radius: 50px;
+    border: none;
+    background: #25D366;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-whatsapp:hover { background: #1EB855; }
+  .btn-whatsapp:active { transform: scale(0.98); }
+
+  .upsell-card {
+    background: rgba(255,255,255,0.5);
+    border-radius: 16px;
+    border: 1.5px solid rgba(130,100,220,0.15);
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--purple-mid);
+    font-weight: 600;
+  }
+
+  /* ── SVG Illustrations ── */
+  .octopus-illustration { opacity: 0.85; }
+
+  /* ── Error state ── */
+  .error-msg {
+    font-size: 13px;
+    color: #c0392b;
+    margin-top: 6px;
+    padding: 0 4px;
+    display: none;
+  }
+
+  /* Ripple on option select */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .page.active { animation: fadeIn 0.25s ease; }
+
+  /* Timer pulse when low */
+  @keyframes pulse { 0%, 100% { color: var(--purple-text); } 50% { color: #c0392b; } }
+  .timer-low { animation: pulse 0.7s infinite; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="screen">
+
+    <!-- ══════════════════════════════
+         PAGE 0: LANDING
+    ══════════════════════════════ -->
+    <div class="page active" id="page-landing">
+      <div class="brand-header">
+        <div class="brand-logo">
+          <div class="brand-logo-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="13" fill="rgba(107,82,200,0.15)" stroke="rgba(107,82,200,0.3)" stroke-width="1.2"/>
+              <ellipse cx="14" cy="13" rx="6" ry="7" fill="rgba(255,255,255,0.7)" stroke="rgba(107,82,200,0.25)" stroke-width="1"/>
+              <circle cx="11.5" cy="12" r="1.5" fill="rgba(45,31,110,0.7)"/>
+              <circle cx="16.5" cy="12" r="1.5" fill="rgba(45,31,110,0.7)"/>
+              <path d="M11.5 16 Q14 18 16.5 16" stroke="rgba(45,31,110,0.5)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+              <ellipse cx="9.5" cy="13.5" r="1.8" ry="1" fill="rgba(255,160,180,0.45)"/>
+              <ellipse cx="18.5" cy="13.5" rx="1.8" ry="1" fill="rgba(255,160,180,0.45)"/>
+            </svg>
+          </div>
+          <div class="brand-name-block">
+            <span class="brand-name">GlowUp Studio</span>
+            <span class="brand-tagline">Skin & Beauty Experts</span>
+          </div>
+        </div>
+        <div class="brand-rating">
+          <span class="brand-stars">★★★★★</span>
+          <span class="brand-rating-text">4.9 · 2k+ clients</span>
+        </div>
+      </div>
+      <div class="landing-content">
+      <!-- Illustration -->
+      <div style="display: flex; justify-content: center;">
+        <svg width="120" height="90" viewBox="0 0 140 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Face/mirror illustration -->
+          <ellipse cx="70" cy="48" rx="38" ry="42" fill="rgba(155,132,240,0.22)" stroke="rgba(107,82,200,0.3)" stroke-width="1.5"/>
+          <ellipse cx="70" cy="45" rx="26" ry="30" fill="rgba(255,255,255,0.5)" stroke="rgba(107,82,200,0.25)" stroke-width="1.2"/>
+          <!-- Eyes -->
+          <ellipse cx="61" cy="40" rx="4" ry="5" fill="rgba(45,31,110,0.7)"/>
+          <ellipse cx="79" cy="40" rx="4" ry="5" fill="rgba(45,31,110,0.7)"/>
+          <circle cx="62.5" cy="38.5" r="1.5" fill="white"/>
+          <circle cx="80.5" cy="38.5" r="1.5" fill="white"/>
+          <!-- Smile -->
+          <path d="M62 52 Q70 58 78 52" stroke="rgba(45,31,110,0.6)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <!-- Cheeks -->
+          <ellipse cx="55" cy="48" rx="5" ry="3" fill="rgba(255,160,180,0.4)"/>
+          <ellipse cx="85" cy="48" rx="5" ry="3" fill="rgba(255,160,180,0.4)"/>
+          <!-- Sparkles -->
+          <text x="15" y="20" font-size="14" opacity="0.7">✦</text>
+          <text x="110" y="25" font-size="12" opacity="0.6">✦</text>
+          <text x="8" y="65" font-size="10" opacity="0.5">✦</text>
+          <text x="118" y="70" font-size="16" opacity="0.65">✦</text>
+          <!-- Hearts -->
+          <text x="20" y="45" font-size="12" opacity="0.6">♡</text>
+          <text x="105" y="50" font-size="10" opacity="0.55">♡</text>
+        </svg>
+      </div>
+        <h1 class="landing-headline">Not sure which treatment is right for your skin?</h1>
+        <p class="landing-sub">Answer a few quick questions and get a personalized beauty plan — crafted just for you ✨</p>
+
+        <textarea
+          class="input-concern"
+          id="concern-input"
+          rows="2"
+          placeholder="Describe your skin concern… e.g. 'My skin feels dull and I have acne scars'"
+        ></textarea>
+
+        <div class="trust-row">
+          <span class="trust-chip">⚡ 2-minute quiz</span>
+          <span class="trust-chip">🎁 Free plan</span>
+          <span class="trust-chip">💯 Personalized</span>
+        </div>
+
+        <button class="btn-cta-main" onclick="startQuiz()">Get My Personalized Plan</button>
+
+        <p class="privacy-note">No spam, ever. We'll only send your beauty plan.</p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PAGE 1: LOADING QUESTIONS
+    ══════════════════════════════ -->
+    <div class="page" id="page-loading-q">
+      <div class="loading-screen">
+        <div class="spinner-ring"></div>
+        <div class="loading-text">Analyzing your concern…</div>
+        <div class="loading-sub">Our beauty AI is crafting questions tailored just for you</div>
+        <div class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PAGE 2: QUIZ QUESTIONS
+    ══════════════════════════════ -->
+    <div class="page" id="page-quiz">
+      <!-- Top bar -->
+      <div class="topbar">
+        <button class="btn-back" onclick="quizBack()">‹</button>
+        <div class="timer-badge" id="quiz-timer">14:30</div>
+      </div>
+
+      <div class="progress-area">
+        <div class="q-label">
+          Q. <span id="q-num">1</span>
+          <div class="dash"></div>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <div class="question-text" id="question-text">
+        What does your skin feel like most mornings?
+      </div>
+
+      <div class="options-list" id="options-list">
+        <!-- Dynamically populated -->
+      </div>
+
+      <!-- Illustration -->
+      <div class="illustration-area">
+        <svg width="130" height="100" viewBox="0 0 130 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="octopus-illustration">
+          <!-- Octopus body -->
+          <ellipse cx="65" cy="42" rx="28" ry="30" fill="rgba(155,132,240,0.35)" stroke="rgba(107,82,200,0.3)" stroke-width="1.5"/>
+          <!-- Eyes -->
+          <circle cx="56" cy="38" r="7" fill="white" stroke="rgba(107,82,200,0.3)" stroke-width="1"/>
+          <circle cx="74" cy="38" r="7" fill="white" stroke="rgba(107,82,200,0.3)" stroke-width="1"/>
+          <circle cx="57" cy="38" r="4" fill="rgba(45,31,110,0.7)"/>
+          <circle cx="75" cy="38" r="4" fill="rgba(45,31,110,0.7)"/>
+          <circle cx="55.5" cy="36.5" r="1.5" fill="white"/>
+          <circle cx="73.5" cy="36.5" r="1.5" fill="white"/>
+          <!-- Smile -->
+          <path d="M59 47 Q65 52 71 47" stroke="rgba(45,31,110,0.5)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <!-- Tentacles -->
+          <path d="M38 58 Q28 68 32 80 Q35 88 40 85" stroke="rgba(107,82,200,0.35)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M46 64 Q38 76 42 88 Q44 94 50 92" stroke="rgba(107,82,200,0.3)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M55 68 Q50 80 55 92 Q57 98 63 96" stroke="rgba(107,82,200,0.3)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M65 68 Q65 82 68 94" stroke="rgba(107,82,200,0.3)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M75 66 Q82 78 80 90 Q78 96 73 98" stroke="rgba(107,82,200,0.3)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M84 60 Q94 70 90 82 Q87 90 82 88" stroke="rgba(107,82,200,0.35)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <!-- Suction cups on tentacles -->
+          <circle cx="30" cy="76" r="2.5" fill="rgba(255,255,255,0.5)" stroke="rgba(107,82,200,0.25)" stroke-width="1"/>
+          <circle cx="40" cy="86" r="2" fill="rgba(255,255,255,0.5)" stroke="rgba(107,82,200,0.25)" stroke-width="1"/>
+          <circle cx="92" cy="72" r="2.5" fill="rgba(255,255,255,0.5)" stroke="rgba(107,82,200,0.25)" stroke-width="1"/>
+          <!-- Sparkles -->
+          <text x="10" y="30" font-size="14" opacity="0.7">✦</text>
+          <text x="108" y="20" font-size="12" opacity="0.6">✦</text>
+          <text x="112" y="55" font-size="10" opacity="0.5">✦</text>
+          <!-- Hearts -->
+          <text x="5" y="58" font-size="12" opacity="0.6">♡</text>
+          <text x="110" y="80" font-size="10" opacity="0.55">♡</text>
+        </svg>
+      </div>
+
+      <div class="bottom-actions">
+        <button class="btn-prev" onclick="prevQuestion()">Previous</button>
+        <button class="btn-next" id="btn-next-q" onclick="nextQuestion()" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PAGE 3: LEAD CAPTURE
+    ══════════════════════════════ -->
+    <div class="page" id="page-lead">
+      <div style="padding: 20px 24px 6px; display: flex; justify-content: flex-end;">
+        <div class="timer-badge" id="lead-timer">—</div>
+      </div>
+
+      <div class="lead-content">
+        <h2 class="lead-headline">Your personalized beauty plan is almost ready! ✨</h2>
+        <p class="lead-sub">We're preparing your custom recommendation. Enter your details to unlock it instantly.</p>
+
+        <div class="prep-card" id="prep-indicator">
+          <div class="prep-spinner" id="prep-spinner"></div>
+          <div class="prep-done" id="prep-done" style="display:none">✓</div>
+          <div class="prep-text" id="prep-text">Preparing your personalized plan…</div>
+        </div>
+
+        <div class="field-label">Your Name</div>
+        <input type="text" class="lead-input" id="lead-name" placeholder="e.g. Priya Sharma" />
+
+        <div class="field-label" style="margin-top: 12px;">Phone Number</div>
+        <input type="tel" class="lead-input" id="lead-phone" placeholder="e.g. +91 98765 43210" />
+
+        <div class="field-label" style="margin-top: 12px;">Email (optional)</div>
+        <input type="email" class="lead-input" id="lead-email" placeholder="e.g. priya@email.com" />
+
+        <div id="lead-error" class="error-msg" style="display:none">Please fill in your name and phone number.</div>
+
+        <div style="margin-top: 16px;">
+          <button class="btn-cta-main" onclick="submitLead()">
+            <span id="unlock-btn-text">Unlock My Plan →</span>
+          </button>
+        </div>
+
+        <p class="privacy-note">🔒 Your details are safe with us. No spam — just your beauty plan.</p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PAGE 4: RESULT
+    ══════════════════════════════ -->
+    <div class="page" id="page-result">
+      <div style="padding: 18px 24px 8px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="brand-badge">✨ GlowUp Studio</div>
+      </div>
+
+      <div class="result-content" id="result-content">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PAGE 5: RESULT LOADING
+    ══════════════════════════════ -->
+    <div class="page" id="page-loading-result">
+      <div class="loading-screen">
+        <div class="spinner-ring"></div>
+        <div class="loading-text">Building your beauty plan…</div>
+        <div class="loading-sub">Consulting our expert AI beautician ✨</div>
+        <div class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .screen -->
+</div><!-- .phone-frame -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION — Replace with your actual Anthropic API key
+// ═══════════════════════════════════════════════════════
+const GOOGLE_API_KEY = "AIzaSyCyzc1LOxFFbEKfJkTE8JYnOQiTEmx-PJs";
+const MODEL = "gemma-3-4b-it"; 
+const WHATSAPP_NUMBER = "918017162874"; // Replace with actual number
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  concern: "",
+  questions: [],       // [{question, options:[]}]
+  currentQ: 0,
+  answers: [],         // ["selected option text", ...]
+  leadName: "",
+  leadPhone: "",
+  leadEmail: "",
+  recommendationPromise: null,   // Promise for LLM call #2
+  recommendationResult: null,    // Cached result once resolved
+  timerSeconds: 870,             // 14:30
+  timerInterval: null,
+};
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerSeconds = 870;
+  state.timerInterval = setInterval(() => {
+    state.timerSeconds = Math.max(0, state.timerSeconds - 1);
+    const m = Math.floor(state.timerSeconds / 60);
+    const s = state.timerSeconds % 60;
+    const label = `${m}:${s.toString().padStart(2, '0')}`;
+    ['quiz-timer', 'lead-timer'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = label;
+        if (state.timerSeconds < 60) el.classList.add('timer-low');
+        else el.classList.remove('timer-low');
+      }
+    });
+    if (state.timerSeconds === 0) clearInterval(state.timerInterval);
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════════════
+// LLM CALL #1 — QUESTION GENERATOR
+// ═══════════════════════════════════════════════════════
+/*
+  PROMPT 1 (Question Generator):
+  Input: user's beauty concern (free text)
+  Output: JSON array of 5 questions, each with question text and 4 options
+
+  System instructs model to act as a professional beautician/dermatologist
+  and generate highly relevant, diagnostic questions.
+*/
+async function generateQuestions(concern) {
+  const systemPrompt = `You are a professional beautician and skincare expert at a premium salon.
+When given a client's beauty concern, generate exactly 5 diagnostic questions to understand their needs better.
+Respond ONLY with valid JSON — no markdown, no preamble.
+Format: {"questions": [{"question": "...", "options": ["A", "B", "C", "D"]}, ...]}
+Questions must feel like a real consultation — specific, warm, and professional.
+Keep options short (under 8 words each). Cover: skin type, lifestyle, previous treatments, severity, goals.`;
+
+  const userPrompt = `My beauty concern: "${concern}"
+Generate 5 tailored follow-up questions to understand my situation better and recommend the right treatment.`;
+
+const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GOOGLE_API_KEY}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              { text: systemPrompt + "\n\n" + userPrompt }
+            ]
+          }
+        ]
+      })
+    }
+  );
+
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const clean = text.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
+}
+
+// ═══════════════════════════════════════════════════════
+// LLM CALL #2 — RECOMMENDATION ENGINE (ASYNC — fires early)
+// ═══════════════════════════════════════════════════════
+/*
+  PROMPT 2 (Recommendation Engine):
+  Input: concern + 5 question-answer pairs
+  Output: structured JSON with:
+    - treatment_name
+    - reasoning
+    - steps (array of timeline steps)
+    - upsell (optional add-on recommendation)
+    - coupon_code
+    - whatsapp_message
+
+  Called immediately when quiz is submitted, BEFORE lead capture.
+  Result is cached so result screen shows instantly after lead form submit.
+*/
+async function generateRecommendation(concern, questionsAndAnswers) {
+  const systemPrompt = `You are a senior aesthetician at a luxury wellness spa.
+Based on a client's concern and quiz answers, provide a highly personalized treatment recommendation.
+Respond ONLY with valid JSON — no markdown, no preamble.
+Format:
+{
+  "treatment_name": "Treatment Name (2-4 words)",
+  "tag": "Short 4-word value prop",
+  "reasoning": "2-3 sentence explanation of why this treatment is perfect for them (warm, expert tone)",
+  "steps": [
+    {"step": "Step title", "detail": "Brief detail", "timing": "When/duration"},
+    ...
+  ],
+  "upsell": "One optional complementary add-on suggestion (1 sentence)",
+  "coupon_code": "GLOW20",
+  "whatsapp_message": "Hi GlowUp Studio! I just took your beauty quiz and got recommended [treatment_name]. I'd love to book a session and use my 20% off coupon GLOW20 🌸"
+}
+Generate 3-4 steps. Make the recommendation feel premium and specific to their answers.`;
+
+  const qa = questionsAndAnswers.map((item, i) =>
+    `Q${i+1}: ${item.question}\nA: ${item.answer}`
+  ).join("\n\n");
+
+  const userPrompt = `Client concern: "${concern}"
+
+Quiz answers:
+${qa}
+
+Please provide a personalized treatment recommendation.`;
+
+const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GOOGLE_API_KEY}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: systemPrompt + "\n\n" + userPrompt }]
+          }
+        ]
+      })
+    }
+  );
+
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const clean = text.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
+}
+
+// ═══════════════════════════════════════════════════════
+// FLOW: START QUIZ
+// ═══════════════════════════════════════════════════════
+async function startQuiz() {
+  const concern = document.getElementById('concern-input').value.trim();
+  if (!concern) {
+    document.getElementById('concern-input').style.borderColor = '#c0392b';
+    document.getElementById('concern-input').placeholder = 'Please describe your concern first!';
+    return;
+  }
+
+  state.concern = concern;
+  showPage('page-loading-q');
+
+  try {
+    const result = await generateQuestions(concern);
+    state.questions = result.questions;
+    state.answers = new Array(state.questions.length).fill(null);
+    state.currentQ = 0;
+
+    startTimer();
+    renderQuestion(0);
+    showPage('page-quiz');
+  } catch (err) {
+    // Fallback questions if API fails
+    state.questions = getFallbackQuestions(concern);
+    state.answers = new Array(state.questions.length).fill(null);
+    state.currentQ = 0;
+    startTimer();
+    renderQuestion(0);
+    showPage('page-quiz');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// FALLBACK QUESTIONS (if API key not set / error)
+// ═══════════════════════════════════════════════════════
+function getFallbackQuestions(concern) {
+  return [
+    { question: "How would you describe your skin type?", options: ["Oily & prone to shine", "Dry & flaky patches", "Combination (oily T-zone)", "Sensitive & reactive"] },
+    { question: "How often do you currently follow a skincare routine?", options: ["Every day without fail", "A few times a week", "Only when I remember", "I'm just starting out"] },
+    { question: "What's your main skin goal right now?", options: ["Clear acne & blemishes", "Brighten dull skin", "Reduce fine lines & aging", "Even out skin tone"] },
+    { question: "Have you tried professional treatments before?", options: ["Yes, facials & more", "Yes, just basic facials", "No, this is my first time", "I use home kits only"] },
+    { question: "How much time can you dedicate to your skin weekly?", options: ["Under 10 minutes/day", "15–30 minutes/day", "I'm open to sessions", "Flexible, results matter most"] }
+  ];
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════════
+function renderQuestion(index) {
+  const q = state.questions[index];
+  const total = state.questions.length;
+
+  document.getElementById('q-num').textContent = index + 1;
+  document.getElementById('progress-fill').style.width = `${((index + 1) / total) * 100}%`;
+  document.getElementById('question-text').textContent = q.question;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+
+  q.options.forEach((opt, i) => {
+    const pill = document.createElement('div');
+    pill.className = 'option-pill' + (state.answers[index] === opt ? ' selected' : '');
+    pill.innerHTML = `
+      <div class="radio-circle"><div class="radio-dot"></div></div>
+      <span>${opt}</span>
+    `;
+    pill.addEventListener('click', () => selectOption(index, opt));
+    list.appendChild(pill);
+  });
+
+  updateNextBtn();
+}
+
+function selectOption(qIndex, opt) {
+  state.answers[qIndex] = opt;
+  renderQuestion(qIndex);
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('btn-next-q');
+  btn.disabled = !state.answers[state.currentQ];
+}
+
+// ═══════════════════════════════════════════════════════
+// QUIZ NAVIGATION
+// ═══════════════════════════════════════════════════════
+function nextQuestion() {
+  if (!state.answers[state.currentQ]) return;
+
+  if (state.currentQ < state.questions.length - 1) {
+    state.currentQ++;
+    renderQuestion(state.currentQ);
+  } else {
+    // Quiz complete — fire recommendation call NOW (async, background)
+    fireRecommendationAsync();
+    showPage('page-lead');
+  }
+}
+
+function prevQuestion() {
+  if (state.currentQ > 0) {
+    state.currentQ--;
+    renderQuestion(state.currentQ);
+  } else {
+    showPage('page-landing');
+    clearInterval(state.timerInterval);
+  }
+}
+
+function quizBack() {
+  if (state.currentQ > 0) prevQuestion();
+  else { showPage('page-landing'); clearInterval(state.timerInterval); }
+}
+
+// ═══════════════════════════════════════════════════════
+// FIRE RECOMMENDATION IN BACKGROUND (async optimization)
+// ═══════════════════════════════════════════════════════
+function fireRecommendationAsync() {
+  const questionsAndAnswers = state.questions.map((q, i) => ({
+    question: q.question,
+    answer: state.answers[i] || "No answer"
+  }));
+
+  // Store the promise — this runs in background while user fills lead form
+  state.recommendationPromise = generateRecommendation(state.concern, questionsAndAnswers)
+    .then(result => {
+      state.recommendationResult = result;
+      // Update the prep indicator to show "ready"
+      const spinner = document.getElementById('prep-spinner');
+      const done = document.getElementById('prep-done');
+      const text = document.getElementById('prep-text');
+      if (spinner) spinner.style.display = 'none';
+      if (done) done.style.display = 'flex';
+      if (text) text.textContent = 'Your personalized plan is ready! 🎉';
+      return result;
+    })
+    .catch(err => {
+      // Fallback recommendation
+      state.recommendationResult = getFallbackRecommendation();
+      return state.recommendationResult;
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBMIT LEAD
+// ═══════════════════════════════════════════════════════
+async function submitLead() {
+  const name = document.getElementById('lead-name').value.trim();
+  const phone = document.getElementById('lead-phone').value.trim();
+  const email = document.getElementById('lead-email').value.trim();
+  const errEl = document.getElementById('lead-error');
+
+  if (!name || !phone) {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  state.leadName = name;
+  state.leadPhone = phone;
+  state.leadEmail = email;
+
+  document.getElementById('unlock-btn-text').textContent = 'Opening your plan…';
+
+  // Wait for recommendation (should already be done, perceived zero wait)
+  if (state.recommendationResult) {
+    renderResult(state.recommendationResult);
+    showPage('page-result');
+  } else {
+    showPage('page-loading-result');
+    try {
+      const result = await state.recommendationPromise;
+      renderResult(result);
+      showPage('page-result');
+    } catch (e) {
+      renderResult(getFallbackRecommendation());
+      showPage('page-result');
+    }
+  }
+
+  document.getElementById('unlock-btn-text').textContent = 'Unlock My Plan →';
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER RESULT
+// ═══════════════════════════════════════════════════════
+function renderResult(rec) {
+  const container = document.getElementById('result-content');
+  const waMsg = encodeURIComponent(
+    rec.whatsapp_message ||
+    `Hi GlowUp Studio! I just completed your beauty quiz. I'd love to book a ${rec.treatment_name} session and use my 20% coupon ${rec.coupon_code} 🌸`
+  );
+
+  const stepsHtml = (rec.steps || []).map((s, i) => `
+    <div class="step-item">
+      <div class="step-num">${i + 1}</div>
+      <div>
+        <strong style="font-size:13.5px;">${s.step}</strong>
+        ${s.detail ? `<div style="color: rgba(45,31,110,0.6); font-size: 12.5px; margin-top: 2px;">${s.detail}${s.timing ? ' · ' + s.timing : ''}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="result-badge">✨ Your Personalized Plan</div>
+    <div class="result-treatment">${rec.treatment_name}</div>
+    ${rec.tag ? `<div style="font-size:13px; color: var(--purple-mid); font-weight:600; margin-bottom:10px;">${rec.tag}</div>` : ''}
+    <div class="result-reasoning">${rec.reasoning}</div>
+
+    ${stepsHtml.length > 0 ? `
+    <div class="steps-card">
+      <div class="steps-title">Your Treatment Journey</div>
+      ${stepsHtml}
+    </div>` : ''}
+
+    ${rec.upsell ? `
+    <div class="upsell-card">
+      💡 <strong>Boost your results:</strong> ${rec.upsell}
+    </div>` : ''}
+
+    <div class="coupon-card">
+      <div class="coupon-headline">20% OFF</div>
+      <div class="coupon-sub">Your first session — just for completing the quiz</div>
+      <div class="coupon-code">${rec.coupon_code || 'GLOW20'}</div>
+    </div>
+
+    <button class="btn-whatsapp" id="wa-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Book on WhatsApp
+    </button>
+
+    <p style="text-align:center; font-size:12px; color: rgba(45,31,110,0.45); margin-top:12px;">
+      Hi ${state.leadName}! Your plan is ready. Our team will reach out to ${state.leadPhone} soon. 💜
+    </p>
+  `;
+    document.getElementById('wa-btn').addEventListener('click', () => {
+    openWhatsApp(waMsg);
+    });
+}
+
+function openWhatsApp(msg) {
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════
+// FALLBACK RECOMMENDATION (when API not configured)
+// ═══════════════════════════════════════════════════════
+function getFallbackRecommendation() {
+  return {
+    treatment_name: "Glow Revival Facial",
+    tag: "Deep cleanse & radiance boost",
+    reasoning: "Based on your answers, your skin needs a deep reset — cleansing clogged pores while restoring hydration and luminosity. The Glow Revival Facial is specially designed for your skin profile to deliver visible results in one session.",
+    steps: [
+      { step: "Skin Analysis", detail: "Personalized consultation with our aesthetician", timing: "Day 1 · 10 min" },
+      { step: "Deep Cleanse & Exfoliation", detail: "Enzyme peel to remove dead skin cells", timing: "25 min" },
+      { step: "Targeted Serum Infusion", detail: "Vitamin C + hyaluronic acid boost", timing: "15 min" },
+      { step: "Glow Mask & Massage", detail: "Relax while actives penetrate deeply", timing: "20 min" }
+    ],
+    upsell: "Add our LED Light Therapy boost (+₹499) to accelerate results by 2x.",
+    coupon_code: "GLOW20",
+    whatsapp_message: "Hi GlowUp Studio! I completed your beauty quiz and got recommended the Glow Revival Facial. I'd love to book a session and use my 20% off coupon GLOW20 🌸"
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('concern-input').addEventListener('input', function() {
+    this.style.borderColor = '';
+  });
+});
+</script>
+</body>
+</html>
